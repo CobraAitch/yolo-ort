@@ -1,0 +1,68 @@
+[package]
+name = "yolo-ort"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.78"
+description = "High-performance YOLO (v5, v11, v26) inference in Rust via ONNX Runtime (ort 2.0)."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/CobraAitch/yolo-ort"
+keywords = ["yolo", "onnx", "object-detection", "inference", "computer-vision"]
+categories = ["computer-vision", "science"]
+
+[features]
+default = ["download-binaries"]
+download-binaries = ["ort/download-binaries", "ort/tls-rustls"]
+cuda = ["ort/cuda"]
+tensorrt = ["ort/tensorrt", "cuda"]
+directml = ["ort/directml"]
+coreml = ["ort/coreml"]
+load-dynamic = ["ort/load-dynamic"]
+
+[dependencies]
+ort = { version = "=2.0.0-rc.12", default-features = false, features = ["std", "ndarray", "copy-dylibs", "api-24"] }
+ndarray = "0.17"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+fast_image_resize = { version = "5", features = ["image"] }
+thiserror = "2"
+
+[dev-dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+
+[[example]]
+name = "detect"
+path = "examples/detect.rs"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = "debuginfo"
+panic = "abort"
+
+[profile.bench]
+inherits = "release"
+debug = true
+strip = "none"
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+similar_names = "allow"
+redundant_pub_crate = "allow"
+missing_fields_in_debug = "allow"
+doc_markdown = "allow"
+struct_excessive_bools = "allow"
+too_many_arguments = "allow"
